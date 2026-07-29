@@ -8,9 +8,17 @@ export default defineConfig({
 		tailwindcss(),
 		sveltekit({
 			compilerOptions: {
-				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
+				experimental: {
+					async: true
+				},
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
+			},
+			experimental: {
+				remoteFunctions: true
+			},
+			alias: {
+				$components: 'src/components'
 			},
 			adapter: adapter()
 		})
