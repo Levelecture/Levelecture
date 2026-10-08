@@ -1,3 +1,4 @@
+import { plugin as shadcn } from '@shadcn/lint';
 import prettier from 'eslint-config-prettier';
 import path from 'node:path';
 import js from '@eslint/js';
@@ -5,8 +6,14 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
+import svelteParser from 'svelte-eslint-parser';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
+
+const shadcnRules = {
+	'shadcn/no-raw-colors': 'error',
+	'shadcn/no-inline-styles': 'error'
+};
 
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
@@ -26,16 +33,19 @@ export default defineConfig(
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
+			parser: svelteParser,
 			parserOptions: {
 				projectService: true,
 				extraFileExtensions: ['.svelte'],
 				parser: ts.parser
 			}
-		}
+		},
+		plugins: { shadcn },
+		rules: shadcnRules
 	},
 	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
-		rules: {}
+		files: ['**/*.ts', '**/*.js'],
+		plugins: { shadcn },
+		rules: shadcnRules
 	}
 );
