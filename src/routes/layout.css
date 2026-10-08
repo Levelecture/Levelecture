@@ -39,6 +39,14 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
+	--course-cover-red: #bf616a;
+	--course-cover-orange: #d08770;
+	--course-cover-yellow: #ebcb8b;
+	--course-cover-green: #a3be8c;
+	--course-cover-teal: #14b8a6;
+	--course-cover-blue: #5e81ac;
+	--course-cover-violet: #b48ead;
+	--course-cover-gray: #3b4252;
 }
 
 .dark {

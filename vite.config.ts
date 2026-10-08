@@ -18,7 +18,7 @@ export default defineConfig({
 				remoteFunctions: true
 			},
 			alias: {
-				$components: 'src/components'
+				$components: 'src/lib/components'
 			},
 			adapter: adapter()
 		})

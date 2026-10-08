@@ -3,4 +3,7 @@ import { PUBLIC_AUTH_URL } from '$env/static/public'
 
 export const authClient = createAuthClient({
   baseURL: PUBLIC_AUTH_URL,
+  fetchOptions: {
+    credentials: 'include',
+  },
 })
