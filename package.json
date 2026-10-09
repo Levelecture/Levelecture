@@ -1,6 +1,6 @@
 {
 	"name": "app-levelecture",
-	"version": "0.0.1",
+	"version": "0.1.0-alpha",
 	"author": "Irtideath",
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
