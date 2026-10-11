@@ -15,7 +15,7 @@
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import * as Field from '$lib/components/ui/field/index.js';
 	import Button from '$components/ui/button/button.svelte';
-	import CourseCover from '$components/course-cover.svelte';
+	import CourseCover from '$components/app/courses/course-cover.svelte';
 
 	import { createCourse, updateCourse } from '$lib/api/courses/index.js';
 	import {

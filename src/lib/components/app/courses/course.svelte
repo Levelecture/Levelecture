@@ -3,9 +3,9 @@
 	import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import Button from '$components/ui/button/button.svelte';
-	import CourseFormDialog from '$components/courses/course-form-dialog.svelte';
-	import CourseDeleteDialog from '$components/courses/course-delete-dialog.svelte';
-	import CourseCover from '$components/courses/course-cover.svelte';
+	import CourseFormDialog from '$components/app/courses/course-form-dialog.svelte';
+	import CourseDeleteDialog from '$components/app/courses/course-delete-dialog.svelte';
+	import CourseCover from '$components/app/courses/course-cover.svelte';
 	import { listCourses } from '$lib/api/courses/index.js';
 	import type { Course } from '$lib/types/courses.js';
 	import { cn } from '$lib/utils.js';
