@@ -3,5 +3,9 @@
 	"name": "levelecture",
 	"compatibility_date": "2026-07-21",
 	"compatibility_flags": ["nodejs_als"],
-	"pages_build_output_dir": ".svelte-kit/cloudflare"
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"vars": {
+    "PUBLIC_AUTH_URL": "https://api.levelecture.web.id",
+    "PUBLIC_SITE_URL": "https://levelecture.web.id"
+  }
 }
