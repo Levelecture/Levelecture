@@ -8,6 +8,9 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
+	"observability": {
+		"enabled": true
+	},
 	"vars": {
 		"PUBLIC_AUTH_URL": "https://api.levelecture.web.id",
 		"PUBLIC_SITE_URL": "https://levelecture.web.id"
