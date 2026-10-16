@@ -4,6 +4,7 @@
 	import Button from '$components/ui/button/button.svelte';
 	import LogoutButton from '$components/auth/logout-button.svelte';
 	import Course from '$components/app/courses/course.svelte';
+	import Assignment from '$components/app/assignments/assignment.svelte';
 
 	const session = authClient.useSession();
 </script>
@@ -28,4 +29,5 @@
 	</div>
 
 	<Course />
+	<Assignment />
 </main>

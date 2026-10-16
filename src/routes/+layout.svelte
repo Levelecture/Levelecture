@@ -8,4 +8,4 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 {@render children()}
-<Toaster />
+<Toaster position="top-right" />
