@@ -45,6 +45,7 @@
 		deleteAssignment
 	} from '$lib/api/assignments/index.js';
 	import { listCourses } from '$lib/api/courses/index.js';
+	import { adjustStatusCount, label, statusColors } from '$lib/assignments-revision.svelte.js';
 	import {
 		assignmentStatus,
 		assignmentPriority,
@@ -93,14 +94,14 @@
 
 	const columns: ColumnDef<typeof features, Assignment>[] = [
 		{ id: 'select' },
-		{ id: 'courseId', accessorKey: 'courseId' },
-		{ id: 'title', accessorKey: 'title' },
-		{ id: 'notes', accessorKey: 'notes' },
-		{ id: 'dueAt', accessorKey: 'dueAt' },
-		{ id: 'status', accessorKey: 'status' },
-		{ id: 'priority', accessorKey: 'priority' },
-		{ id: 'taskUrl', accessorKey: 'taskUrl' },
-		{ id: 'grade', accessorKey: 'grade' }
+		{ id: 'courseId' },
+		{ id: 'title' },
+		{ id: 'notes' },
+		{ id: 'dueAt' },
+		{ id: 'status' },
+		{ id: 'priority' },
+		{ id: 'taskUrl' },
+		{ id: 'grade' }
 	];
 
 	const table = createTable({
@@ -162,14 +163,6 @@
 	};
 
 	const courseItems = $derived(courses.map((course) => ({ value: course.id, label: course.name })));
-	const label = (value: string) =>
-		value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
-
-	const statusColors: Record<AssignmentStatus, string> = {
-		todo: 'var(--course-cover-gray)',
-		in_progress: 'var(--course-cover-blue)',
-		done: 'var(--course-cover-green)'
-	};
 	const priorityColors: Record<AssignmentPriority, string> = {
 		low: 'var(--course-cover-teal)',
 		medium: 'var(--course-cover-yellow)',
@@ -315,6 +308,10 @@
 			}
 		} catch (err) {
 			if (latestReq.get(key) === seq) {
+				if ('status' in patch) {
+					adjustStatusCount(current.status, 1);
+					adjustStatusCount(patch.status as AssignmentStatus, -1);
+				}
 				toast.error(err instanceof Error ? err.message : 'Gagal menyimpan perubahan');
 				resetVersion.set(key, (resetVersion.get(key) ?? 0) + 1);
 				flashCell(key);
@@ -423,6 +420,7 @@
 		}
 
 		pending.add('draft');
+		adjustStatusCount(draftStatus, 1);
 		try {
 			const saved = await createAssignment(parsed.data);
 			if (filterStatus !== 'all' || filterPriority !== 'all' || search) {
@@ -434,6 +432,7 @@
 			resetDraft();
 			showDraft = false;
 		} catch (err) {
+			adjustStatusCount(draftStatus, -1);
 			toast.error(err instanceof Error ? err.message : 'Gagal menambahkan tugas');
 		} finally {
 			pending.delete('draft');
@@ -446,8 +445,16 @@
 
 		table.setRowSelection({});
 		ids.forEach((id) => pending.add(id));
+		const statusById = new Map<string, AssignmentStatus>(
+			rows().filter((row) => ids.includes(row.id)).map((row) => [row.id, row.status])
+		);
+		for (const status of statusById.values()) adjustStatusCount(status, -1);
 
 		const results = await Promise.allSettled(ids.map((id) => deleteAssignment(id)));
+		ids.forEach((id, index) => {
+			const status = statusById.get(id);
+			if (status && results[index].status === 'rejected') adjustStatusCount(status, 1);
+		});
 		const deleted = new Set(ids.filter((_, index) => results[index].status === 'fulfilled'));
 
 		cancelLoad();
@@ -474,7 +481,7 @@
 	{/if}
 {/snippet}
 
-<section class="mt-10 pb-30">
+<section>
 	<div class="flex flex-wrap items-end justify-between gap-2">
 		<div class="flex flex-col items-start gap-2">
 			<div class="flex items-center gap-2 rounded-md px-3 py-1.5">
@@ -534,7 +541,7 @@
 		</div>
 	</div>
 
-	<div class="border-border mt-3 overflow-hidden rounded-md border">
+	<div class="border-border mt-3 overflow-x-auto rounded-md border">
 		{#if error}
 			<div class="flex flex-col items-center gap-3 p-8 text-center">
 				<p class="text-muted-foreground text-sm">{error}</p>
@@ -659,6 +666,8 @@
 													const key = `${id}:grade`;
 													resetVersion.set(key, (resetVersion.get(key) ?? 0) + 1);
 												}
+												adjustStatusCount(row.original.status, -1);
+												adjustStatusCount(next, 1);
 												save(id, { status: next }, 300);
 											}}
 											/>
