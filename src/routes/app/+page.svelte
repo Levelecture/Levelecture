@@ -4,6 +4,9 @@
 	import Button from '$components/ui/button/button.svelte';
 	import LogoutButton from '$components/auth/logout-button.svelte';
 	import Course from '$components/app/courses/course.svelte';
+	import Assignment from '$components/app/assignments/assignment.svelte';
+	import StatusPie from '$components/app/assignments/status-pie.svelte';
+	import GradesBar from '$components/app/assignments/grades-bar.svelte';
 
 	const session = authClient.useSession();
 </script>
@@ -28,4 +31,14 @@
 	</div>
 
 	<Course />
+	<GradesBar />
+	
+	<div class="mt-4 flex flex-col gap-6 lg:flex-row lg:items-start">
+		<div class="w-full lg:w-105 lg:shrink-0">
+			<StatusPie />
+		</div>
+		<div class="min-w-0 flex-1">
+			<Assignment />
+		</div>
+	</div>
 </main>

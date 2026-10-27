@@ -126,6 +126,10 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@utility badge-tint {
+	background-color: color-mix(in oklab, currentColor 18%, transparent);
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;

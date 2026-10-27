@@ -1,5 +1,7 @@
 <script lang="ts">
   import LoginForm from "$lib/components/auth/login-form.svelte";
+  import levelectureLogo from '$lib/assets/levelecturelogo.png';
+  import authImage from '$lib/assets/authimage.png';
 </script>
 <div class="grid min-h-svh lg:grid-cols-2">
   <div class="flex flex-col gap-4 p-6 md:p-10">
@@ -9,7 +11,7 @@
           class="size-12"
         >
           <img
-            src="/src/lib/assets/levelecturelogo.png"
+            src={levelectureLogo}
             alt="auth red abstract"
             class="h-full w-full object-cover"
           />
@@ -24,7 +26,7 @@
   </div>
   <div class="-z-10 lg:relative lg:block">
     <img
-      src="/src/lib/assets/authimage.png"
+      src={authImage}
       alt="auth red abstract"
       class="absolute inset-0 h-full w-full object-cover opacity-20 lg:opacity-100"
     />
