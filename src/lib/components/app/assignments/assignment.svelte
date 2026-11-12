@@ -233,12 +233,12 @@
 	}
 
 	$effect(() => {
-		const current = untrack(() => page.url);
-		const url = new URL(current.href);
+		const current = window.location.href;
+		const url = new URL(current);
 		setParam(url, 'status', filterStatus);
 		setParam(url, 'priority', filterPriority);
 		setParam(url, 'search', search);
-		if (url.href === current.href) return;
+		if (url.href === current) return;
 		const state = untrack(() => page.state);
 		const query = url.searchParams.toString();
 		if (query) {
@@ -387,6 +387,10 @@
 	function onSearch(value: string) {
 		searchInput = value;
 		clearTimeout(searchTimer);
+		if (!value.trim()) {
+			clearSearch();
+			return;
+		}
 		searchTimer = setTimeout(() => {
 			table.setRowSelection({});
 			search = searchInput.trim();
