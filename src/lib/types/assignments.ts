@@ -24,7 +24,7 @@ export const updateAssignmentSchema = z.object({
 	dueAt: z.coerce.date().nullish(),
 	reminderAt: z.coerce.date().nullish(),
 	submittedAt: z.coerce.date().nullish(),
-	grade: z.number().nullish()
+	grade: z.number().min(0).max(100).nullish()
 });
 
 export const listAssignmentsQuerySchema = z.object({
