@@ -193,10 +193,11 @@
 		return assignments ?? [];
 	}
 
-	function toGrade(raw: string): number | null {
+	function toGrade(raw: string): number | null | undefined {
 		if (raw.trim() === '') return null;
 		const parsed = Number(raw);
-		return Number.isFinite(parsed) ? parsed : null;
+		if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) return undefined;
+		return parsed;
 	}
 
 	async function load() {
@@ -338,6 +339,12 @@
 				void persist(id, patch, key, current);
 			}, delay)
 		);
+	}
+
+	function cancelSave(key: string) {
+		const timer = debounceTimers.get(key);
+		if (timer) clearTimeout(timer);
+		debounceTimers.delete(key);
 	}
 
 	let showDraft = $state(false);
@@ -703,8 +710,24 @@
 												placeholder="–"
 												locked={row.original.status !== 'done'}
 												value={row.original.grade}
-												onchange={(value) =>
-													save(row.original.id, { grade: toGrade(value) }, 300)}
+												onchange={(value) => {
+													const grade = toGrade(value);
+													if (grade === undefined) {
+														const key = `${row.original.id}:grade`;
+														cancelSave(key);
+														flashCell(key);
+														return;
+													}
+													save(row.original.id, { grade }, 300);
+												}}
+												oncommit={(value) => {
+													if (toGrade(value) !== undefined) return;
+													const key = `${row.original.id}:grade`;
+													cancelSave(key);
+													toast.error('Nilai harus antara 0 dan 100');
+													resetVersion.set(key, (resetVersion.get(key) ?? 0) + 1);
+													flashCell(key);
+												}}
 												onblocked={() => toast.error('Nilai hanya bisa diisi saat status Done')}
 											/>
 										{/key}

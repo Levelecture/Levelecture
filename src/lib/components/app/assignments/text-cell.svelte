@@ -12,6 +12,7 @@
 		locked = false,
 		class: className,
 		onchange,
+		oncommit,
 		onblocked
 	}: {
 		value?: string | number | null;
@@ -23,6 +24,7 @@
 		locked?: boolean;
 		class?: string;
 		onchange?: (value: string) => void;
+		oncommit?: (value: string) => void;
 		onblocked?: () => void;
 	} = $props();
 
@@ -32,6 +34,7 @@
 		if (locked) return;
 		const current = value == null ? '' : String(value);
 		if (local !== current) onchange?.(local);
+		oncommit?.(local);
 	}
 </script>
 
