@@ -124,7 +124,7 @@
 		status: 'min-w-[150px]',
 		priority: 'min-w-[140px]',
 		taskUrl: 'min-w-[200px]',
-		grade: 'min-w-[110px]'
+		grade: 'min-w-[80px]'
 	};
 
 	const columnMeta: Record<string, { label: string; hint: string; icon: Component }> = {
@@ -568,7 +568,7 @@
 			<Table.Root>
 				<Table.Header>
 					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-						<Table.Row class="hover:bg-transparent">
+						<Table.Row class="hover:bg-transparent divide-x divide-border">
 							{#each headerGroup.headers as header (header.id)}
 								<Table.Head class={cn('text-muted-foreground text-xs', columnClassMap[header.column.id])}>
 									{#if header.column.id === 'select'}
@@ -594,7 +594,7 @@
 				</Table.Header>
 				<Table.Body>
 					{#each table.getRowModel().rows as row (row.id)}
-						<Table.Row>
+						<Table.Row class="divide-x divide-border">
 							{#each row.getAllCells() as cell (cell.id)}
 								<Table.Cell
 									class={cn(
@@ -755,7 +755,7 @@
 					{/if}
 
 					{#if showDraft}
-						<Table.Row bind:ref={draftRowEl} class="hover:bg-transparent">
+						<Table.Row bind:ref={draftRowEl} class="hover:bg-transparent divide-x divide-border">
 							<Table.Cell class="w-10" />
 							<Table.Cell class="p-0">
 								<SelectCell
