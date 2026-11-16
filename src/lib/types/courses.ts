@@ -6,7 +6,6 @@ export const courseStatus = courseStatusSchema.options;
 
 export const courseSchema = z.object({
 	id: z.string(),
-	userId: z.string(),
 	code: z.string(),
 	name: z.string(),
 	sks: z.number().int(),
@@ -18,6 +17,8 @@ export const courseSchema = z.object({
 	createdAt: z.string(),
 	updatedAt: z.string()
 });
+
+export const listCoursesResponseSchema = z.object({ data: courseSchema.array() });
 
 export const createCourseSchema = z.object({
 	code: z

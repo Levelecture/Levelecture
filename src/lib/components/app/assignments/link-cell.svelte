@@ -101,14 +101,16 @@
 				Empty
 			</button>
 		{/if}
-		<button
-			type="button"
-			onclick={enterEdit}
-			aria-label="Ubah link"
-			title="Ubah link"
-			class="bg-muted text-muted-foreground hover:bg-accent hover:text-foreground shrink-0 cursor-pointer rounded-md p-1 transition-colors"
-		>
-			<PencilIcon class="size-3" />
-		</button>
+		{#if local}
+			<button
+				type="button"
+				onclick={enterEdit}
+				aria-label="Ubah link"
+				title="Ubah link"
+				class="bg-muted text-muted-foreground hover:bg-accent hover:text-foreground shrink-0 cursor-pointer rounded-md p-1 transition-colors"
+			>
+				<PencilIcon class="size-3" />
+			</button>
+		{/if}
 	</div>
 {/if}

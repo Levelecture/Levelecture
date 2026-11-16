@@ -124,7 +124,7 @@
 		status: 'min-w-[150px]',
 		priority: 'min-w-[140px]',
 		taskUrl: 'min-w-[200px]',
-		grade: 'min-w-[110px]'
+		grade: 'min-w-[80px]'
 	};
 
 	const columnMeta: Record<string, { label: string; hint: string; icon: Component }> = {
@@ -193,10 +193,11 @@
 		return assignments ?? [];
 	}
 
-	function toGrade(raw: string): number | null {
+	function toGrade(raw: string): number | null | undefined {
 		if (raw.trim() === '') return null;
 		const parsed = Number(raw);
-		return Number.isFinite(parsed) ? parsed : null;
+		if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) return undefined;
+		return parsed;
 	}
 
 	async function load() {
@@ -232,12 +233,12 @@
 	}
 
 	$effect(() => {
-		const current = untrack(() => page.url);
-		const url = new URL(current.href);
+		const current = window.location.href;
+		const url = new URL(current);
 		setParam(url, 'status', filterStatus);
 		setParam(url, 'priority', filterPriority);
 		setParam(url, 'search', search);
-		if (url.href === current.href) return;
+		if (url.href === current) return;
 		const state = untrack(() => page.state);
 		const query = url.searchParams.toString();
 		if (query) {
@@ -340,6 +341,12 @@
 		);
 	}
 
+	function cancelSave(key: string) {
+		const timer = debounceTimers.get(key);
+		if (timer) clearTimeout(timer);
+		debounceTimers.delete(key);
+	}
+
 	let showDraft = $state(false);
 	let draftCourseId = $state('');
 	let draftTitle = $state('');
@@ -380,6 +387,10 @@
 	function onSearch(value: string) {
 		searchInput = value;
 		clearTimeout(searchTimer);
+		if (!value.trim()) {
+			clearSearch();
+			return;
+		}
 		searchTimer = setTimeout(() => {
 			table.setRowSelection({});
 			search = searchInput.trim();
@@ -557,7 +568,7 @@
 			<Table.Root>
 				<Table.Header>
 					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-						<Table.Row class="hover:bg-transparent">
+						<Table.Row class="hover:bg-transparent divide-x divide-border">
 							{#each headerGroup.headers as header (header.id)}
 								<Table.Head class={cn('text-muted-foreground text-xs', columnClassMap[header.column.id])}>
 									{#if header.column.id === 'select'}
@@ -583,7 +594,7 @@
 				</Table.Header>
 				<Table.Body>
 					{#each table.getRowModel().rows as row (row.id)}
-						<Table.Row>
+						<Table.Row class="divide-x divide-border">
 							{#each row.getAllCells() as cell (cell.id)}
 								<Table.Cell
 									class={cn(
@@ -703,8 +714,24 @@
 												placeholder="–"
 												locked={row.original.status !== 'done'}
 												value={row.original.grade}
-												onchange={(value) =>
-													save(row.original.id, { grade: toGrade(value) }, 300)}
+												onchange={(value) => {
+													const grade = toGrade(value);
+													if (grade === undefined) {
+														const key = `${row.original.id}:grade`;
+														cancelSave(key);
+														flashCell(key);
+														return;
+													}
+													save(row.original.id, { grade }, 300);
+												}}
+												oncommit={(value) => {
+													if (toGrade(value) !== undefined) return;
+													const key = `${row.original.id}:grade`;
+													cancelSave(key);
+													toast.error('Nilai harus antara 0 dan 100');
+													resetVersion.set(key, (resetVersion.get(key) ?? 0) + 1);
+													flashCell(key);
+												}}
 												onblocked={() => toast.error('Nilai hanya bisa diisi saat status Done')}
 											/>
 										{/key}
@@ -728,7 +755,7 @@
 					{/if}
 
 					{#if showDraft}
-						<Table.Row bind:ref={draftRowEl} class="hover:bg-transparent">
+						<Table.Row bind:ref={draftRowEl} class="hover:bg-transparent divide-x divide-border">
 							<Table.Cell class="w-10" />
 							<Table.Cell class="p-0">
 								<SelectCell

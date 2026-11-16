@@ -1,6 +1,7 @@
 import { request } from '$lib/api/request.js';
 import {
 	courseSchema,
+	listCoursesResponseSchema,
 	createCourseSchema,
 	updateCourseSchema,
 	deleteCourseResponseSchema,
@@ -13,8 +14,9 @@ export type { Course, CourseStatus } from '$lib/types/courses.js';
 
 const PATH = '/courses';
 
-export function listCourses(): Promise<Course[]> {
-	return request(PATH, courseSchema.array());
+export async function listCourses(): Promise<Course[]> {
+	const res = await request(PATH, listCoursesResponseSchema);
+	return res.data;
 }
 
 export function getCourse(id: string): Promise<Course> {

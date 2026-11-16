@@ -53,6 +53,7 @@
 	let status = $state<CourseStatus>(initial?.status ?? 'aktif');
 	let cover = $state(initial?.cover ?? DEFAULT_COVER);
 	let pending = $state(false);
+	let submitted = $state(false);
 
 	const statusLabels: Record<string, string> = {
 		aktif: 'Aktif',
@@ -77,7 +78,7 @@
 
 	const issues = $derived.by(() => {
 		const map: Record<string, { message: string }[]> = {};
-		if (!parsed.success) {
+		if (submitted && !parsed.success) {
 			for (const issue of parsed.error.issues) {
 				const key = String(issue.path[0] ?? 'form');
 				(map[key] ??= []).push({ message: issue.message });
@@ -88,6 +89,7 @@
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
+		submitted = true;
 		if (!parsed.success) return;
 
 		pending = true;
