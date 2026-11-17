@@ -45,7 +45,14 @@
 		deleteAssignment
 	} from '$lib/api/assignments/index.js';
 	import { listCourses } from '$lib/api/courses/index.js';
-	import { adjustStatusCount, label, statusColors } from '$lib/assignments-revision.svelte.js';
+	import {
+		adjustStatusCount,
+		findGradePoint,
+		label,
+		removeGradePoint,
+		setGradePoint,
+		statusColors
+	} from '$lib/assignments-revision.svelte.js';
 	import {
 		assignmentStatus,
 		assignmentPriority,
@@ -298,6 +305,18 @@
 		});
 		if (!changed) return;
 
+		const gradeSnapshot = findGradePoint(id);
+		const gradeChartTouched =
+			'grade' in patch ||
+			('status' in patch && patch.status != null && patch.status !== 'done');
+
+		if ('grade' in patch) {
+			if (patch.grade == null) removeGradePoint(id);
+			else setGradePoint({ id, title: current.title, grade: patch.grade });
+		} else if ('status' in patch && patch.status != null && patch.status !== 'done') {
+			removeGradePoint(id);
+		}
+
 		const seq = ++reqSeq;
 		latestReq.set(key, seq);
 		pending.add(id);
@@ -306,9 +325,17 @@
 			if (latestReq.get(key) === seq) {
 				cancelLoad();
 				assignments = rows().map((row) => (row.id === id ? saved : row));
+				if ('title' in patch && typeof patch.title === 'string') {
+					const point = findGradePoint(id);
+					if (point) setGradePoint({ ...point, title: patch.title });
+				}
 			}
 		} catch (err) {
 			if (latestReq.get(key) === seq) {
+				if (gradeChartTouched) {
+					if (gradeSnapshot) setGradePoint(gradeSnapshot);
+					else removeGradePoint(id);
+				}
 				if ('status' in patch) {
 					adjustStatusCount(current.status, 1);
 					adjustStatusCount(patch.status as AssignmentStatus, -1);
@@ -467,6 +494,7 @@
 			if (status && results[index].status === 'rejected') adjustStatusCount(status, 1);
 		});
 		const deleted = new Set(ids.filter((_, index) => results[index].status === 'fulfilled'));
+		deleted.forEach((id) => removeGradePoint(id));
 
 		cancelLoad();
 		assignments = rows().filter((row) => !deleted.has(row.id));
